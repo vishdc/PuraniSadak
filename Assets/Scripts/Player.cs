@@ -37,11 +37,8 @@ public class Player : MonoBehaviour
 	[HideInInspector]
 	public float score;
 
-	private bool canMove;
-
     void Start()
     {
-		canMove = false;
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
         boxCollider = GetComponent<BoxCollider>();
@@ -58,9 +55,6 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-		if (!canMove)
-			return;
-
 		score += Time.deltaTime * speed;
 		uiManager.UpdateScore((int)score);
 
@@ -169,7 +163,6 @@ public class Player : MonoBehaviour
 	{
 		anim.Play("runStart");
 		speed = minSpeed;
-		canMove = true;
 	}
 
     void ChangeLane(int direction)
@@ -221,7 +214,6 @@ public class Player : MonoBehaviour
 
 		if (other.CompareTag("Obstacle"))
 		{
-			canMove = false;
 			currentLife--;
 			anim.SetTrigger("Hit");
 			speed = 0;
@@ -234,18 +226,10 @@ public class Player : MonoBehaviour
 			}
 			else
 			{
-				//Invoke("CanMove", 0.75f);
 				StartCoroutine(Blinking(invincibleTime));
 			}
 		}
 	}
-
-	//void CanMove()
-	//{
-	//	canMove = true;
-	//}
-
-
 
 	IEnumerator Blinking(float time)
 	{
