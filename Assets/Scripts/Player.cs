@@ -32,7 +32,9 @@ public class Player : MonoBehaviour
 	private bool invincible = false;
 	static int blinkingValue;
 	private UIManager uiManager;
+	[HideInInspector]
 	public int coins;
+	[HideInInspector]
 	public float score;
 
     void Start()
@@ -46,6 +48,7 @@ public class Player : MonoBehaviour
 		speed = minSpeed;
 		blinkingValue = Shader.PropertyToID("_BlinkingValue");
 		uiManager = FindObjectOfType<UIManager>();
+		GameManager.gm.StartMissions();
     }
 
     // Update is called once per frame
