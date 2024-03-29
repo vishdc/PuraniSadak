@@ -37,8 +37,11 @@ public class Player : MonoBehaviour
 	[HideInInspector]
 	public float score;
 
+	private bool canMove;
+
     void Start()
     {
+		canMove = false;
         rb = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
         boxCollider = GetComponent<BoxCollider>();
@@ -49,11 +52,15 @@ public class Player : MonoBehaviour
 		blinkingValue = Shader.PropertyToID("_BlinkingValue");
 		uiManager = FindObjectOfType<UIManager>();
 		GameManager.gm.StartMissions();
+		
+		Invoke("StartRun", 3f);
     }
 
-    // Update is called once per frame
     void Update()
     {
+		if (!canMove)
+			return;
+
 		score += Time.deltaTime * speed;
 		uiManager.UpdateScore((int)score);
 
@@ -158,6 +165,13 @@ public class Player : MonoBehaviour
 		rb.velocity = Vector3.forward * speed;
 	}
 
+	void StartRun()
+	{
+		anim.Play("runStart");
+		speed = minSpeed;
+		canMove = true;
+	}
+
     void ChangeLane(int direction)
 	{
 		int targetLane = currentLane + direction;
@@ -207,6 +221,7 @@ public class Player : MonoBehaviour
 
 		if (other.CompareTag("Obstacle"))
 		{
+			canMove = false;
 			currentLife--;
 			anim.SetTrigger("Hit");
 			speed = 0;
@@ -219,10 +234,17 @@ public class Player : MonoBehaviour
 			}
 			else
 			{
+				//Invoke("CanMove", 0.75f);
 				StartCoroutine(Blinking(invincibleTime));
 			}
 		}
 	}
+
+	//void CanMove()
+	//{
+	//	canMove = true;
+	//}
+
 
 
 	IEnumerator Blinking(float time)
@@ -238,7 +260,6 @@ public class Player : MonoBehaviour
 		while(timer < time && invincible)
 		{
 			model.SetActive(enabled);
-			//Shader.SetGlobalFloat(blinkingValue, currentBlink);
 			yield return null;
 			timer += Time.deltaTime;
 			lastBlink += Time.deltaTime;
@@ -250,12 +271,12 @@ public class Player : MonoBehaviour
 			}
 		}
 		model.SetActive(true);
-		//Shader.SetGlobalFloat(blinkingValue, 0);
 		invincible = false;
 	}
 
 	void CallMenu()
 	{
+		GameManager.gm.coins += coins;
 		GameManager.gm.EndRun();
 	}
 
